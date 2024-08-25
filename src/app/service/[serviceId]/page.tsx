@@ -2,7 +2,7 @@ import React from "react";
 import ThreadComponent, { IThread } from "@/components/thread/ThreadComponent";
 import Title, { IService } from "@/components/layout/Title";
 
-const threads: IThread[] = [
+export const threads: IThread[] = [
   {
     id: "1",
     name: "John Doe",
