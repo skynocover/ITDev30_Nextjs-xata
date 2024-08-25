@@ -2,6 +2,8 @@ import React from "react";
 import ThreadComponent, { IThread } from "@/components/thread/ThreadComponent";
 import Title, { IService } from "@/components/layout/Title";
 
+import PostCard from "@/components/thread/PostCard";
+
 export const threads: IThread[] = [
   {
     id: "1",
@@ -134,6 +136,7 @@ export default async function Page({
   return (
     <div className="container mx-auto p-6 max-w-6xl relative">
       <Title service={service} />
+      <PostCard description={service.description} />
 
       {threads.map((thread) => (
         <ThreadComponent

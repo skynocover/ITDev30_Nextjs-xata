@@ -42,9 +42,6 @@ export default function Title({ service }: TitleProps) {
       <h1 className="text-3xl font-bold text-center mb-2 mt-6 text-black">
         {service.name}
       </h1>
-      <p className="text-sm text-gray-500 text-center whitespace-pre-wrap mb-2">
-        {service.description}
-      </p>
       <div className="flex justify-center mb-2 space-x-2">
         {service.headLinks.map((link, index) => (
           <Link
