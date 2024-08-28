@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { ReplyButton } from "./PostCard";
+import { threadId } from "worker_threads";
+
 export interface IThread {
   id: string;
   name: string;
@@ -103,6 +106,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
               </Link>
             )}
           </CardTitle>
+          <ReplyButton threadId={thread.id} />
         </div>
 
         <div
