@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://EricWu-s-workspace-2lkpjt.ap-southeast-2.xata.sh/db/ithome",
+  "codegen": {
+    "output": "src/xata.ts"
+  }
+}

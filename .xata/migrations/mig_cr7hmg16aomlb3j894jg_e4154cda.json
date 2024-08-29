@@ -1,0 +1,16 @@
+{
+  "id": "mig_cr7hmg16aomlb3j894jg",
+  "parentID": "mig_cr7hmcsab458pbei9a1g",
+  "checksum": "1:e4154cdaaeaae9683b17e5d0b7597fdae881de08d6f6598d57a2334983a2126e",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "number",
+          "type": "int"
+        },
+        "table": "test"
+      }
+    }
+  ]
+}
