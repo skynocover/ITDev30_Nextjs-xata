@@ -1,0 +1,60 @@
+{
+  "tables": [
+    {
+      "name": "services",
+      "columns": [
+        { "name": "name", "type": "string" },
+        {
+          "name": "topLinks",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "[]"
+        },
+        {
+          "name": "headLinks",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "[]"
+        },
+        { "name": "description", "type": "text" }
+      ]
+    },
+    {
+      "name": "threads",
+      "columns": [
+        {
+          "name": "title",
+          "type": "string",
+          "defaultValue": "Untitled"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "defaultValue": "anonymous"
+        },
+        { "name": "content", "type": "text" },
+        { "name": "image", "type": "file" },
+        { "name": "youtubeID", "type": "string" },
+        { "name": "replyAt", "type": "datetime" },
+        { "name": "userId", "type": "string" },
+        { "name": "userIp", "type": "string" }
+      ]
+    },
+    {
+      "name": "replies",
+      "columns": [
+        {
+          "name": "name",
+          "type": "string",
+          "defaultValue": "anonymous"
+        },
+        { "name": "content", "type": "text" },
+        { "name": "image", "type": "file" },
+        { "name": "youtubeID", "type": "string" },
+        { "name": "thread", "type": "link", "link": { "table": "threads" } },
+        { "name": "userId", "type": "string" },
+        { "name": "userIp", "type": "string" }
+      ]
+    }
+  ]
+}

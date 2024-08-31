@@ -1,8 +1,10 @@
 import React from "react";
 import ThreadComponent, { IThread } from "@/components/thread/ThreadComponent";
-import Title, { IService } from "@/components/layout/Title";
+import Title from "@/components/layout/Title";
 
 import PostCard from "@/components/thread/PostCard";
+import { getService } from "@/lib/database/service";
+import { notFound } from "next/navigation";
 
 export const threads: IThread[] = [
   {
@@ -119,24 +121,29 @@ export default async function Page({
 }: {
   params: { serviceId: string };
 }) {
-  const service: IService = {
-    id: params.serviceId,
-    name: "My Service",
-    topLinks: [{ name: "Nextjs", url: "https://nextjs.org/" }],
-    headLinks: [
-      {
-        name: "鐵人賽",
-        url: "https://ithelp.ithome.com.tw/users/20168796/ironman/7445",
-      },
-      { name: "ithome", url: "https://ithelp.ithome.com.tw/" },
-    ],
-    description: "This is an example service providing various utilities.",
-  };
+  // const service: IService = {
+  //   id: params.serviceId,
+  //   name: "My Service",
+  //   topLinks: [{ name: "Nextjs", url: "https://nextjs.org/" }],
+  //   headLinks: [
+  //     {
+  //       name: "鐵人賽",
+  //       url: "https://ithelp.ithome.com.tw/users/20168796/ironman/7445",
+  //     },
+  //     { name: "ithome", url: "https://ithelp.ithome.com.tw/" },
+  //   ],
+  //   description: "This is an example service providing various utilities.",
+  // };
+
+  const service = await getService({ serviceId: params.serviceId });
+  if (!service) {
+    return notFound();
+  }
 
   return (
     <div className="container mx-auto p-6 max-w-6xl relative">
       <Title service={service} />
-      <PostCard description={service.description} />
+      <PostCard description={service.description || ""} />
 
       {threads.map((thread) => (
         <ThreadComponent

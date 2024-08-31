@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "xata:gen": "xata codegen --output src/xata.ts",
+    "xata:upload": "xata schema upload src/lib/database/schema.json"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.1",
