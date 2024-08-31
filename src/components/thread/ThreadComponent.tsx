@@ -14,19 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { ReplyButton } from "./PostCard";
-import { threadId } from "worker_threads";
-
-export interface IThread {
-  id: string;
-  name: string;
-  title: string;
-  content?: string;
-  image?: string;
-  youtubeID?: string;
-  userId: string;
-  createdAt: string;
-  replies: IReply[];
-}
+import { ThreadWithReplies } from "@/lib/database/thread";
 
 export interface IReply {
   id: string;
@@ -40,7 +28,7 @@ export interface IReply {
 
 interface ThreadComponentProps {
   serviceId: string;
-  thread: IThread;
+  thread: ThreadWithReplies;
   isPage?: boolean;
 }
 
@@ -106,7 +94,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
               </Link>
             )}
           </CardTitle>
-          <ReplyButton threadId={thread.id} />
+          <ReplyButton serviceId={serviceId} threadId={thread.id} />
         </div>
 
         <div
@@ -115,7 +103,9 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
         >
           <span className="font-semibold text-gray-700">{thread.name}</span>
           <span>ID: {thread.userId}</span>
-          <span className="ml-auto flex items-center">{thread.createdAt}</span>
+          <span className="ml-auto flex items-center">
+            {thread.xata.createdAt.toLocaleString()}
+          </span>
           <span className="text-blue-300 ml-1">No: {thread.id}</span>
         </div>
       </CardHeader>
@@ -125,8 +115,8 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
             <>
               <div className="w-full md:w-1/2 mb-4 md:mb-0 h-auto">
                 <MediaContent
-                  imageURL={thread.image}
-                  youtubeID={thread.youtubeID}
+                  imageURL={thread.image?.url}
+                  youtubeID={thread.youtubeID || ""}
                 />
               </div>
               <div className="w-full md:w-1/2">{thread.content}</div>
@@ -171,7 +161,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
                     </span>
                     <span>ID: {reply.userId}</span>
                     <span className="ml-auto flex items-center">
-                      {reply.createdAt}
+                      {reply.xata.createdAt.toLocaleString()}
                     </span>
                     <span className="text-blue-300 ml-1">No: {reply.id}</span>
                   </div>
@@ -181,8 +171,8 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
                         <>
                           <div className="w-full md:w-1/2 mb-4 md:mb-0 h-auto">
                             <MediaContent
-                              imageURL={reply.image}
-                              youtubeID={reply.youtubeID}
+                              imageURL={reply.image?.url}
+                              youtubeID={reply.youtubeID || ""}
                             />
                           </div>
                           <div className="w-full md:w-1/2">{reply.content}</div>

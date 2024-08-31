@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Upload,
   Link,
@@ -25,12 +26,14 @@ import { validatePostInput, PostInput } from "@/lib/utils/threads";
 import { PostContent } from "./PostContent";
 
 interface PostCardProps {
+  serviceId: string;
   description?: string;
   threadId?: string;
   onClose?: () => void;
 }
 
 export default function PostCard({
+  serviceId,
   description,
   threadId,
   onClose,
@@ -105,6 +108,16 @@ export default function PostCard({
       if (file) {
         formData.append("image", file);
       }
+
+      await axios.post(
+        isReply
+          ? `/api/service/${serviceId}/reply`
+          : `/api/service/${serviceId}/thread`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       // Reset form fields
       setTitle("");
@@ -294,9 +307,10 @@ export default function PostCard({
 
 interface IReplyModal {
   threadId: string;
+  serviceId: string;
 }
 
-export const ReplyButton: React.FC<IReplyModal> = ({ threadId }) => {
+export const ReplyButton: React.FC<IReplyModal> = ({ threadId, serviceId }) => {
   const [showReplyModal, setShowReplyModal] = useState(false);
 
   return (
@@ -313,6 +327,7 @@ export const ReplyButton: React.FC<IReplyModal> = ({ threadId }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="w-full max-w-md">
             <PostCard
+              serviceId={serviceId}
               threadId={threadId}
               onClose={() => setShowReplyModal(false)}
             />

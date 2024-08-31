@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 export interface PostInput {
   threadId?: string; //Reply才會有
   title?: string;
@@ -51,4 +53,19 @@ export const extractYouTubeVideoId = (url: string): string | null => {
     /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
+};
+
+export const fileToBase64 = async (file: File): Promise<string> => {
+  const buffer = await file.arrayBuffer();
+  const base64String = Buffer.from(buffer).toString("base64");
+  return base64String;
+};
+
+export const generateUserId = (ip: string): string => {
+  const key =
+    process.env.USER_ID_SECRET_KEY ||
+    "ccf721ebbbfd4aabfb0c101ae1df46a585c945b75ecf92640807cab55902c858";
+  const hash = crypto.createHash("sha256");
+  hash.update(ip + key);
+  return hash.digest("hex").substring(0, 13);
 };
