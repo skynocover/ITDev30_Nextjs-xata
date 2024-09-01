@@ -28,7 +28,10 @@ const tables = [
       { name: "userId", type: "string" },
       { name: "userIp", type: "string" },
     ],
-    revLinks: [{ column: "thread", table: "replies" }],
+    revLinks: [
+      { column: "thread", table: "replies" },
+      { column: "thread", table: "reports" },
+    ],
   },
   {
     name: "replies",
@@ -40,6 +43,17 @@ const tables = [
       { name: "thread", type: "link", link: { table: "threads" } },
       { name: "userId", type: "string" },
       { name: "userIp", type: "string" },
+    ],
+    revLinks: [{ column: "reply", table: "reports" }],
+  },
+  {
+    name: "reports",
+    columns: [
+      { name: "content", type: "text" },
+      { name: "thread", type: "link", link: { table: "threads" } },
+      { name: "reply", type: "link", link: { table: "replies" } },
+      { name: "userIp", type: "string" },
+      { name: "reportedIp", type: "string" },
     ],
   },
 ] as const;
@@ -56,10 +70,14 @@ export type ThreadsRecord = Threads & XataRecord;
 export type Replies = InferredTypes["replies"];
 export type RepliesRecord = Replies & XataRecord;
 
+export type Reports = InferredTypes["reports"];
+export type ReportsRecord = Reports & XataRecord;
+
 export type DatabaseSchema = {
   services: ServicesRecord;
   threads: ThreadsRecord;
   replies: RepliesRecord;
+  reports: ReportsRecord;
 };
 
 const DatabaseClient = buildClient();

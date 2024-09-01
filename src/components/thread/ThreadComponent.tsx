@@ -16,6 +16,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ReplyButton } from "./PostCard";
 import { ThreadWithReplies } from "@/lib/database/thread";
 import { formateTime } from "@/lib/utils/timeformate";
+import { ReportButton } from "./ReportButton";
 
 export interface IReply {
   id: string;
@@ -108,6 +109,11 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
             {formateTime(thread.xata.createdAt)}
           </span>
           <span className="text-blue-300 ml-1">No: {thread.id}</span>
+          <ReportButton
+            serviceId={serviceId}
+            threadId={thread.id}
+            reportedIp={thread.userIp || ""}
+          />
         </div>
       </CardHeader>
       <CardContent className="pt-3">
@@ -165,6 +171,11 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
                       {formateTime(reply.xata.createdAt)}
                     </span>
                     <span className="text-blue-300 ml-1">No: {reply.id}</span>
+                    <ReportButton
+                      serviceId={serviceId}
+                      replyId={reply.id}
+                      reportedIp={thread.userIp || ""}
+                    />
                   </div>
                   <div className="mt-2">
                     <div className="flex flex-col md:flex-row md:space-x-4">
