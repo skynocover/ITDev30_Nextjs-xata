@@ -9,6 +9,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 import ServiceEditor from "@/components/service/ServiceEditor";
+import ReportList from "@/components/service/ReportList";
+
 export default async function Page({
   params,
 }: {
@@ -48,6 +50,7 @@ export default async function Page({
       {userId === "admin" ? (
         <>
           <ServiceEditor service={service} serviceId={params.serviceId} />
+          <ReportList serviceId={params.serviceId} />
         </>
       ) : (
         <>

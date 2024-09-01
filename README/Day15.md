@@ -299,6 +299,7 @@ export const ReportButton: React.FC<ReportModalProps> = ({
 <span className="text-blue-300 ml-1">No: {reply.id}</span>
 <ReportButton
   serviceId={serviceId}
+  threadId={thread.id}
   replyId={reply.id}
   reportedIp={reply.userIp || ""}
 />

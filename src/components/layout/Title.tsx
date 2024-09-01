@@ -31,6 +31,12 @@ export default function Title({ service }: TitleProps) {
         >
           Homepage <Link2 className="ml-1 h-3 w-3" />
         </Link>
+        <Link
+          href={`/dashboard/main`}
+          className="text-gray-400 hover:text-gray-600 flex items-center"
+        >
+          Dashboard <Link2 className="ml-1 h-3 w-3" />
+        </Link>
       </div>
       <h1 className="text-3xl font-bold text-center mb-2 mt-6 text-black">
         {service.name}
