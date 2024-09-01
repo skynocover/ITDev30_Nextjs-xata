@@ -1,7 +1,13 @@
 import { XataClient, ThreadsRecord, RepliesRecord } from "../../xata";
 
-export type ThreadWithReplies = ThreadsRecord & {
-  replies: RepliesRecord[];
+type WithoutImage<T> = Omit<T, "image">;
+
+export type ThreadWithReplies = WithoutImage<ThreadsRecord> & {
+  image?: string;
+  replies: (WithoutImage<RepliesRecord> & {
+    image?: string;
+    threadId: string;
+  })[];
 };
 
 interface IGetThreads {
@@ -50,11 +56,14 @@ export const getThreads = async ({
         const transformedReplies = replies.map((reply) => ({
           ...reply,
           thread: undefined,
+          threadId: thread.id,
+          image: reply.image?.url,
         }));
 
         return {
           ...thread,
           replies: transformedReplies,
+          image: thread.image?.url,
         };
       })
     );
@@ -103,7 +112,13 @@ export const getThread = async ({
     // Combine thread and replies
     const threadWithReplies: ThreadWithReplies = {
       ...thread,
-      replies,
+      image: thread.image?.url,
+      replies: replies.map((reply) => ({
+        ...reply,
+        image: reply.image?.url,
+        threadId: reply.thread?.id || "",
+        thread: undefined,
+      })),
     };
 
     return threadWithReplies;

@@ -1,30 +1,26 @@
 import React from "react";
 import { notFound } from "next/navigation";
 
-import Title, { IService } from "@/components/layout/Title";
+import Title from "@/components/layout/Title";
 import ThreadComponent from "@/components/thread/ThreadComponent";
-import { threads } from "../page";
+
+import { getService } from "@/lib/database/service";
+import { getThread } from "@/lib/database/thread";
 
 export default async function Page({
   params,
 }: {
   params: { threadId: string; serviceId: string };
 }) {
-  const service: IService = {
-    id: params.serviceId,
-    name: "My Service",
-    topLinks: [{ name: "Nextjs", url: "https://nextjs.org/" }],
-    headLinks: [
-      {
-        name: "鐵人賽",
-        url: "https://ithelp.ithome.com.tw/users/20168796/ironman/7445",
-      },
-      { name: "ithome", url: "https://ithelp.ithome.com.tw/" },
-    ],
-    description: "This is an example service providing various utilities.",
-  };
+  const service = await getService({ serviceId: params.serviceId });
+  if (!service) {
+    return notFound();
+  }
 
-  const thread = threads.find((t) => t.id === params.threadId);
+  const thread = await getThread({
+    serviceId: params.serviceId,
+    threadId: params.threadId,
+  });
 
   if (!thread) {
     return notFound();

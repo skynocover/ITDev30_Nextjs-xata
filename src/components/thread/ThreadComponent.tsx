@@ -15,6 +15,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { ReplyButton } from "./PostCard";
 import { ThreadWithReplies } from "@/lib/database/thread";
+import { formateTime } from "@/lib/utils/timeformate";
 
 export interface IReply {
   id: string;
@@ -104,7 +105,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
           <span className="font-semibold text-gray-700">{thread.name}</span>
           <span>ID: {thread.userId}</span>
           <span className="ml-auto flex items-center">
-            {thread.xata.createdAt.toLocaleString()}
+            {formateTime(thread.xata.createdAt)}
           </span>
           <span className="text-blue-300 ml-1">No: {thread.id}</span>
         </div>
@@ -115,7 +116,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
             <>
               <div className="w-full md:w-1/2 mb-4 md:mb-0 h-auto">
                 <MediaContent
-                  imageURL={thread.image?.url}
+                  imageURL={thread.image}
                   youtubeID={thread.youtubeID || ""}
                 />
               </div>
@@ -161,7 +162,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
                     </span>
                     <span>ID: {reply.userId}</span>
                     <span className="ml-auto flex items-center">
-                      {reply.xata.createdAt.toLocaleString()}
+                      {formateTime(reply.xata.createdAt)}
                     </span>
                     <span className="text-blue-300 ml-1">No: {reply.id}</span>
                   </div>
@@ -171,7 +172,7 @@ const ThreadComponent: React.FC<ThreadComponentProps> = ({
                         <>
                           <div className="w-full md:w-1/2 mb-4 md:mb-0 h-auto">
                             <MediaContent
-                              imageURL={reply.image?.url}
+                              imageURL={reply.image}
                               youtubeID={reply.youtubeID || ""}
                             />
                           </div>
