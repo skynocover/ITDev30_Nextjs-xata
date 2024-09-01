@@ -19,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SessionProvider>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <main className="flex-grow container ">{children}</main>
+        </body>
       </SessionProvider>
     </html>
   );

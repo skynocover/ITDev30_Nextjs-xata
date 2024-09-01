@@ -127,3 +127,46 @@ export const getThread = async ({
     return null;
   }
 };
+
+// for home page
+
+export type ThreadWithReplyCount = WithoutImage<ThreadsRecord> & {
+  image?: string;
+  replyCount: number;
+};
+
+export const getThreadsWithReplyCount = async ({
+  serviceId,
+  pageSize = 10,
+}: IGetThreads): Promise<ThreadWithReplyCount[]> => {
+  try {
+    const xata = new XataClient({
+      branch: serviceId,
+      apiKey: process.env.XATA_API_KEY,
+    });
+
+    const { records: threads } = await xata.db.threads
+      .sort("replyAt", "desc")
+      .getPaginated({ pagination: { size: pageSize } });
+
+    const threadsWithReplies: ThreadWithReplyCount[] = await Promise.all(
+      threads.map(async (thread) => {
+        const { aggs } = await xata.db.replies.aggregate(
+          { totalCount: { count: "*" } },
+          { thread: { id: thread.id } }
+        );
+
+        return {
+          ...thread,
+          image: thread.image?.url,
+          replyCount: aggs.totalCount,
+        };
+      })
+    );
+
+    return threadsWithReplies;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
