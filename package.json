@@ -11,7 +11,9 @@
     "xata:upload": "xata schema upload src/lib/database/schema.json"
   },
   "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
@@ -22,6 +24,7 @@
     "dayjs": "^1.11.13",
     "lucide-react": "^0.429.0",
     "next": "14.2.5",
+    "next-auth": "^5.0.0-beta.20",
     "react": "^18",
     "react-dom": "^18",
     "react-markdown": "^9.0.1",
