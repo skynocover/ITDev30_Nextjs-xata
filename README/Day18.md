@@ -1,3 +1,55 @@
+# 
+
+## 我們來試試Nextjs的Server Action
+
+### 什麼是Server Action
+
+Server Action 的目的是將Server端的函數直接嵌入到客戶端代碼中,無需手動創建 API 路由
+
+也就是說 我們目前定義的`src/app/api/service/[serviceId]/reports`這個API路由 可以被Server Action取代
+
+### Server Action有什麼好處
+
+好處是我們使用api串接時 會失去IDE的型別檢查
+但是使用Server Action 我們可以將他當成一個普通的函數來使用
+就可以保證我們在進行前後端的傳值時 可以有型別的檢查
+
+Nextjs將會自動為每個 Server Action 自動生成一個唯一的端點
+並提供CSFR保護 減少被偽造的請求攻擊的可能
+
+Next.js 對這些"API"調用進行了優化,減少了不必要的Client-Server往返
+
+## 實作Server Action
+
+在你的`src/app/actions/reports.ts`中 建立以下的檔案
+
+```ts
+"use server";
+
+import { XataClient } from "@/xata";
+import { auth } from "@/auth";
+
+export const getReports = async ({ serviceId }: { serviceId: string }) => {
+  const session = await auth();
+  if (!session || session.user?.id !== "admin") {
+    return [];
+  }
+  const xata = new XataClient({
+    branch: serviceId,
+    apiKey: process.env.XATA_API_KEY,
+  });
+
+  return xata.db.reports.getAll();
+};
+```
+
+注意需要加上`"use server"` 這樣的標記 告訴Nextjs這是一個Server Action
+
+### 在Client端使用Server Action
+
+修改你的`src/components/service/ReportList.tsx`
+
+```ts
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { Trash2, ExternalLink, FileX, MessageSquareX } from "lucide-react";
@@ -321,3 +373,41 @@ const ReportList: React.FC<ReportListProps> = ({ serviceId }) => {
 };
 
 export default ReportList;
+
+```
+
+注意到
+```ts
+import { getReports } from "@/app/actions/reports";
+```
+
+這裡我們使用`getReports`這個Server Action
+並且在實作時 不像之前使用axios來call api 取得的response是沒有型別的
+這裡的
+```ts
+const reports = await getReports({ serviceId });
+```
+
+取得的reports會是有型別的
+
+## Report list
+
+來到你的
+```
+http://localhost:3000/dashboard/main
+```
+
+點開F12 並重新整理畫面 你應該可以看到以下的api以及他的response
+
+## 總結
+
+使用server action我們可以減少api串接的code 並且在實作時可以有型別的檢查
+
+不過Server action只有post一個method 並且也不像api一樣有middleware可以使用
+因此需要謹慎選擇可以使用的時機
+
+明天我們實作發文的server action
+
+
+
+
