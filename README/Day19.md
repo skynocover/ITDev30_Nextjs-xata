@@ -1,3 +1,78 @@
+## 我們將新增thread的API也改成使用server action
+
+先新增src/app/actions/threads.ts
+
+```ts
+"use server";
+import { headers } from "next/headers";
+
+import { extractYouTubeVideoId, generateUserId } from "@/lib/utils/threads";
+import { XataClient } from "@/xata";
+
+export interface Image {
+  name: string;
+  mediaType: string;
+  base64Content: string;
+  enablePublicUrl: boolean;
+}
+interface CreateThreadParams {
+  serviceId: string;
+  name?: string;
+  title?: string;
+  content?: string;
+  youtubeLink?: string;
+  image?: Image | null;
+}
+
+export const createThread = async ({
+  serviceId,
+  name,
+  title,
+  content,
+  youtubeLink,
+  image,
+}: CreateThreadParams) => {
+  const ip = await getClientIP();
+  const userId = generateUserId(ip);
+
+  const xata = new XataClient({
+    branch: serviceId,
+    apiKey: process.env.XATA_API_KEY,
+  });
+
+  await xata.db.threads.create({
+    title: (title && title.trim()) || "Untitled",
+    name: (name && name.trim()) || "anonymous",
+    content,
+    youtubeID: youtubeLink ? extractYouTubeVideoId(youtubeLink) : undefined,
+    image,
+    replyAt: new Date(),
+    userId,
+    userIp: ip,
+  });
+};
+
+export async function getClientIP() {
+  const headersList = headers();
+
+  const forwardedFor = headersList.get("x-forwarded-for");
+  const realIP = headersList.get("x-real-ip");
+
+  let clientIP: string | null = null;
+
+  if (forwardedFor) {
+    clientIP = forwardedFor.split(",")[0].trim();
+  } else if (realIP) {
+    clientIP = realIP;
+  }
+
+  return clientIP || "Unknown";
+}
+```
+
+並且在src/components/thread/PostCard.tsx中修改
+
+```tsx
 "use client";
 
 import React, { useRef, useState, useTransition } from "react";
@@ -292,3 +367,55 @@ export const ReplyButton: React.FC<IReplyModal> = ({ threadId, serviceId }) => {
     </>
   );
 };
+
+```
+
+### 觀念解釋
+
+在新的程式碼中 我們不再需要 `title` `name` `sage` `youtubeLink` 這些state
+因為我們將他們改由formData來管理
+
+並且我們將
+```ts
+ if (imageFile) {
+      image = {
+        name: encodeURIComponent(imageFile.name),
+        mediaType: imageFile.type,
+        base64Content: await fileToBase64(imageFile),
+        enablePublicUrl: true,
+      };
+    }
+```
+這段改成在前端實作
+這是因為使用server action時 只能傳遞plain data
+也因此我們沒辦法像是api一樣將整個image直接傳遞到後端
+因此我們先在前端平面化之後再交給後端
+
+另外 由於server action的body大小限制跟api的不一樣
+因此我們需要修改next.config.mjs
+
+```ts
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb",
+    },
+  },
+};
+
+export default nextConfig;
+```
+
+bodySizeLimit 預設是 1mb, 你可以改成你希望的大小
+
+## 總結
+
+我們今天使用了form來實作新增thread
+你可以用同樣的方式來修改新增reply
+
+我們這裡就不實作
+
+
+
+
