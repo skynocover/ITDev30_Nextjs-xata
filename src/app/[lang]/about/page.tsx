@@ -2,8 +2,11 @@ import { getDictionary } from "./getDictionary";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import LanguageSwitcher from "@/components/commons/LanguageSwitcher";
+import { cookies } from "next/headers";
 
 export default async function Home({ params }: { params: { lang: string } }) {
+  const testGroup = cookies().get("test_group");
+
   if (params.lang !== "en" && params.lang !== "zh") {
     notFound();
   }
@@ -21,6 +24,9 @@ export default async function Home({ params }: { params: { lang: string } }) {
         </CardHeader>
         <CardContent>
           <p className="text-center text-lg">{dictionary.welcome}</p>
+          <p className="text-center text-lg text-red-400">
+            Test Group: {testGroup?.value}
+          </p>
         </CardContent>
       </Card>
     </div>
