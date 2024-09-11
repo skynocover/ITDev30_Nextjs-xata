@@ -1,8 +1,24 @@
+import type { Metadata } from "next";
 import { getDictionary } from "./getDictionary";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import LanguageSwitcher from "@/components/commons/LanguageSwitcher";
 import { cookies } from "next/headers";
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { lang: string };
+}): Promise<Metadata> => {
+  if (params.lang === "zh") {
+    return {
+      title: "關於我們",
+    };
+  }
+  return {
+    title: "About Us",
+  };
+};
 
 export default async function Home({ params }: { params: { lang: string } }) {
   const testGroup = cookies().get("test_group");
