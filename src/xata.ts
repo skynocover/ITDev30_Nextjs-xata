@@ -14,6 +14,7 @@ const tables = [
       { name: "topLinks", type: "json", notNull: true, defaultValue: "[]" },
       { name: "headLinks", type: "json", notNull: true, defaultValue: "[]" },
       { name: "description", type: "text" },
+      { name: "permissions", type: "json", notNull: true, defaultValue: "{}" },
     ],
   },
   {

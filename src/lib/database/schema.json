@@ -16,7 +16,13 @@
           "notNull": true,
           "defaultValue": "[]"
         },
-        { "name": "description", "type": "text" }
+        { "name": "description", "type": "text" },
+        {
+          "name": "permissions",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "{}"
+        }
       ]
     },
     {

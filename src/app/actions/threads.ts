@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 
 import { extractYouTubeVideoId, generateUserId } from "@/lib/utils/threads";
 import { XataClient } from "@/xata";
+import { auth } from "@/auth";
 
 export interface Image {
   name: string;
@@ -34,6 +35,19 @@ export const createThread = async ({
     branch: serviceId,
     apiKey: process.env.XATA_API_KEY,
   });
+
+  const service = await xata.db.services.getFirst();
+
+  if (!service) {
+    throw new Error("Service not found");
+  }
+
+  if (service.permissions.adminOnlyThread) {
+    const session = await auth();
+    if (session?.user?.id !== "admin") {
+      throw new Error("You don't have permission");
+    }
+  }
 
   await xata.db.threads.create({
     title: (title && title.trim()) || "Untitled",

@@ -1,3 +1,106 @@
+## 幫你的討論版增加更多身份驗證
+
+今天這個討論版除了可以當討論版以外
+還可以當作個人部落格來使用
+只需要加上permission 讓特定用戶可以發文就好
+我們來實作看看吧
+
+## 安裝套件
+
+先安裝今天會用到的套件
+```
+pnpm dlx shadcn@latest add switch label
+```
+
+
+## DB Schema
+
+先修改DB的schema
+```json
+    {
+      "name": "services",
+      "columns": [
+        { "name": "name", "type": "string" },
+        {
+          "name": "topLinks",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "[]"
+        },
+        {
+          "name": "headLinks",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "[]"
+        },
+        { "name": "description", "type": "text" },
+        {
+          "name": "permissions",
+          "type": "json",
+          "notNull": true,
+          "defaultValue": "{}"
+        }
+      ]
+    }
+```
+
+然後同樣使用
+```
+pnpm xata:upload
+pnpm xata:gen
+```
+來同步Xata以及本地端的client
+
+## Service Action
+
+然後我們在`src/app/actions/service.ts`內 新增以下檔案
+
+```ts
+"use server";
+
+import { XataClient, ServicesRecord } from "@/xata";
+import { auth } from "@/auth";
+
+export async function updateService(serviceId: string, data: ServicesRecord) {
+  try {
+    const session = await auth();
+    if (!session || session.user?.id !== "admin") {
+      throw new Error("You don't have permission");
+    }
+
+    const xata = new XataClient({
+      branch: serviceId,
+      apiKey: process.env.XATA_API_KEY,
+    });
+    const service = await xata.db.services.getFirst();
+
+    if (!service) {
+      throw new Error("Service not found");
+    }
+    if (!session || session.user?.id !== "admin") {
+      throw new Error("You don't have permission");
+    }
+
+    await xata.db.services.update(service.id, {
+      name: data.name?.trim(),
+      description: data.description,
+      topLinks: data.topLinks || [],
+      headLinks: data.headLinks || [],
+      permissions: data.permissions || {},
+    });
+
+    return { message: "Service updated successfully" };
+  } catch (error: any) {
+    console.error("Service update error:", error);
+    throw new Error("Service update failed: " + error.message);
+  }
+}
+```
+
+然後修改你的`src/components/service/ServiceEditor.tsx`
+
+
+```tsx
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
@@ -298,3 +401,53 @@ const LinkEditor: React.FC<LinkEditorProps> = ({ links, onLinksChange }) => {
 };
 
 export default ServiceEditor;
+
+```
+
+我們在修改service的地方
+新增了一個tab 讓我們可以修改permissions
+
+接著我們需要在新增thread的地方 驗證這個permissions
+因為我們之前將新增thread改成使用service action了
+因此修改你的`src/app/actions/threads.ts`
+
+```ts
+// 記得import auth進來
+import { auth } from "@/auth";
+
+// 在新增threads之前新增這段
+  const service = await xata.db.services.getFirst();
+
+  if (!service) {
+    throw new Error("Service not found");
+  }
+
+  if (service.permissions.adminOnlyThread) {
+    const session = await auth();
+    if (session?.user?.id !== "admin") {
+      throw new Error("You don't have permission");
+    }
+  }
+```
+
+## 測試permissions
+
+接下來你可以來測試你的permission有沒有正常運作了
+
+先到dashboard中 將`Only admin can create new threads`給打開
+
+然後開啟你的無痕視窗並進入`http://localhost:3000/service/main`
+試著發文看看 你會發現失敗
+接著可以嘗試登入之後再發文 你會發現成功
+
+這樣就算完成了
+
+## 總結
+
+今天我們幫我們的服務增加了一些permission的設定
+
+你可以把這個服務的`Only admin can create new threads`開啟
+然後就可以把它當成個人部落格來使用了
+
+今天只示範了thread 你可以幫你的report跟reply也都加上permission的驗證
+
